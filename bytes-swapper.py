@@ -29,6 +29,7 @@ def scrambleFile (bytes_array, filename):
 def createParser ():
 	parser = argparse.ArgumentParser(description="A tool that swaps the bytes of a file")
 	parser.add_argument("inputFile", help="Path to the file", nargs="*")
+	parser.add_argument("-o", "--output", help="Output directory")
 
 	return parser
 
@@ -36,11 +37,18 @@ def createParser ():
 if __name__ == "__main__":
 	parser = createParser()
 	parser = parser.parse_args(sys.argv[1:])
-
+	
 	for file in parser.inputFile:
 		if os.path.exists(file):
 			bytes_array = bytesSwapper(file)
-			scrambleFile(bytes_array, file)
+			
+			if parser.output:
+				filename = file.split("/")[-1]
+				if os.path.exists(parser.output):
+					scrambleFile(bytes_array, parser.output+filename)
+
+			else:
+				scrambleFile(bytes_array, file)
 
 		else:
-			raise IOError("File not found")
+			print("File %s not found" % file)
